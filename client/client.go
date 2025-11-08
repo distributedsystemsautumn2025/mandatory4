@@ -20,37 +20,50 @@ import (
 
 type node struct {
 	pb.UnimplementedRicartAgrawalaServiceServer
-	ID    string
-	peers map[string]chan *pb.AccessRequest
+	id    string
 	clock int64
 	state string
+
+	//key: peer node ID, value: grpc client
+	peers map[string]pb.RicartAgrawalaServiceClient
+}
+
+var idToPort = map[string]string{
+	"1": "localhost:9000",
+	"2": "localhost:9001",
+	"3": "localhost:9002",
 }
 
 func main() {
-	//here, we let clients define the port they will be listening at on instantiation in terminal
-	// when starting the program, run : "go run client.go --port='PORT' --id='ID'"
-	//Remember the =-signs!!!
-	port := flag.String("port", "", "listen on this port")
+	//here, we let clients define their id at instantiation in terminal
+	//when starting the program, run : "go run client.go --id='ID'"
+	//port := flag.String("port", "", "listen on this port")
+
 	id := flag.String("id", "", "node ID")
 	flag.Parse()
 
-	if *port == "" || *id == "" {
-		log.Fatalf("Usage: go run client.go --port='port' --id='id'")
+	if *id == "" {
+		log.Fatalf("Usage: go run client.go --id='id'")
 	}
 
-	lis, err := net.Listen("tcp", ":"+*port)
-	if err != nil {
-		log.Fatalf("failed to listen on port %s: %v", *port, err)
+	nodeAddress, ok := idToPort[*id]
+	if !ok {
+		log.Fatalf("Did not find address for id=%s", *id)
 	}
+
+	lis, err := net.Listen("tcp", nodeAddress)
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
+	log.Printf("Node %s listening on %s", *id, nodeAddress)
 
 	node := &node{
-		ID:    *id,
-		peers: make(map[string]chan *pb.AccessRequest),
+		id:    *id,
 		clock: 0,
 		state: "released",
+		peers: make(map[string]pb.RicartAgrawalaServiceClient),
 	}
 
-	log.Printf("Node %s listening on port %s", *id, *port)
 	grpcServer := grpc.NewServer()
 	pb.RegisterRicartAgrawalaServiceServer(grpcServer, node)
 
@@ -59,6 +72,8 @@ func main() {
 			log.Fatalf("failed to serve: %v", err)
 		}
 	}()
+
+	node.connectToPeers()
 
 	//graceful shutdown
 	signalChan := make(chan os.Signal, 1)
@@ -71,10 +86,31 @@ func main() {
 
 	_, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
+
 }
 
-func (n *node) multicast(msg *pb.AccessRequest) {
+/*func (node *node) multicast(msg *pb.AccessRequest) {
 	for peer := range n.peers {
-		n.peers[peer] <- msg
+		node.peers[peer] <- msg
+	}
+}*/
+
+func (node *node) connectToPeers() {
+	//check that you don't attempt to connect to yourself:
+	for peerID, addr := range idToPort {
+		if peerID == node.id {
+			continue
+		}
+
+		conn, err := grpc.Dial(addr, grpc.WithInsecure())
+		if err != nil {
+			log.Printf("Failed to connect to peer %s at %s: %v", peerID, addr, err)
+			continue
+		}
+
+		client := pb.NewRicartAgrawalaServiceClient(conn)
+		node.peers[peerID] = client
+
+		log.Printf("Node %s connected to peer %s at %s", node.id, peerID, addr)
 	}
 }
