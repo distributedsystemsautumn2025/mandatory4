@@ -28,12 +28,14 @@ type node struct {
 
 func main() {
 	//here, we let clients define the port they will be listening at on instantiation in terminal
+	// when starting the program, run : "go run client.go --port='PORT' --id='ID'"
+	//Remember the =-signs!!!
 	port := flag.String("port", "", "listen on this port")
 	id := flag.String("id", "", "node ID")
 	flag.Parse()
 
 	if *port == "" || *id == "" {
-		log.Fatal("Usage: go run main.go --port='port' --id='id'")
+		log.Fatalf("Usage: go run client.go --port='port' --id='id'")
 	}
 
 	lis, err := net.Listen("tcp", ":"+*port)
