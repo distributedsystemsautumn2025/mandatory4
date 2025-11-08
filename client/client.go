@@ -16,6 +16,7 @@ import (
 	pb "mandatory4/grpc"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 type node struct {
@@ -95,6 +96,7 @@ func main() {
 	}
 }*/
 
+// here we attempt to connect to other nodes
 func (node *node) connectToPeers() {
 	//check that you don't attempt to connect to yourself:
 	for peerID, addr := range idToPort {
@@ -102,7 +104,7 @@ func (node *node) connectToPeers() {
 			continue
 		}
 
-		conn, err := grpc.Dial(addr, grpc.WithInsecure())
+		conn, err := grpc.NewClient(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 		if err != nil {
 			log.Printf("Failed to connect to peer %s at %s: %v", peerID, addr, err)
 			continue
