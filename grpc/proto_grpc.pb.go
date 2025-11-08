@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             v6.32.1
-// source: mandatory4/grpc/proto.proto
+// source: grpc/proto.proto
 
 package proto
 
@@ -143,5 +143,5 @@ var RicartAgrawalaService_ServiceDesc = grpc.ServiceDesc{
 			ClientStreams: true,
 		},
 	},
-	Metadata: "mandatory4/grpc/proto.proto",
+	Metadata: "grpc/proto.proto",
 }
