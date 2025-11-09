@@ -1,6 +1,14 @@
-2025/11/08 11:58:02 client.go:39: The server is listening at [::]:9000
-2025/11/08 11:58:18 client.go:47: received termination signal, shutting down gracefully ...
-2025/11/08 11:58:50 client.go:47: received termination signal, shutting down gracefully ...
-2025/11/08 11:59:14 client.go:37: failed to listen: listen tcp 0.0.0.0:9000: bind: address already in use
-2025/11/08 11:59:19 client.go:37: failed to listen: listen tcp 0.0.0.0:9000: bind: address already in use
-2025/11/08 11:59:27 client.go:47: received termination signal, shutting down gracefully ...
+2025/11/09 18:43:15 client.go:74: Node 2 listening on localhost:9001
+2025/11/09 18:43:20 client.go:74: Node 1 listening on localhost:9000
+2025/11/09 18:43:27 client.go:74: Node 3 listening on localhost:9002
+2025/11/09 18:43:50 client.go:74: Node 1 listening on localhost:9000
+2025/11/09 18:43:58 client.go:74: Node 2 listening on localhost:9001
+2025/11/09 18:44:01 client.go:74: Node 3 listening on localhost:9002
+2025/11/09 18:45:51 client.go:74: Node 1 listening on localhost:9000
+2025/11/09 18:45:53 client.go:74: Node 2 listening on localhost:9001
+2025/11/09 18:45:54 client.go:74: Node 3 listening on localhost:9002
+2025/11/09 18:50:16 client.go:82: Node 1 listening on localhost:9000
+2025/11/09 18:51:24 client.go:82: Node 1 listening on localhost:9000
+2025/11/09 18:52:07 client.go:82: Node 1 listening on localhost:9000
+2025/11/09 18:52:09 client.go:82: Node 2 listening on localhost:9001
+2025/11/09 18:52:11 client.go:82: Node 3 listening on localhost:9002
