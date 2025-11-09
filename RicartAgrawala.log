@@ -1,14 +1,32 @@
-2025/11/09 18:43:15 client.go:74: Node 2 listening on localhost:9001
-2025/11/09 18:43:20 client.go:74: Node 1 listening on localhost:9000
-2025/11/09 18:43:27 client.go:74: Node 3 listening on localhost:9002
-2025/11/09 18:43:50 client.go:74: Node 1 listening on localhost:9000
-2025/11/09 18:43:58 client.go:74: Node 2 listening on localhost:9001
-2025/11/09 18:44:01 client.go:74: Node 3 listening on localhost:9002
-2025/11/09 18:45:51 client.go:74: Node 1 listening on localhost:9000
-2025/11/09 18:45:53 client.go:74: Node 2 listening on localhost:9001
-2025/11/09 18:45:54 client.go:74: Node 3 listening on localhost:9002
-2025/11/09 18:50:16 client.go:82: Node 1 listening on localhost:9000
-2025/11/09 18:51:24 client.go:82: Node 1 listening on localhost:9000
-2025/11/09 18:52:07 client.go:82: Node 1 listening on localhost:9000
-2025/11/09 18:52:09 client.go:82: Node 2 listening on localhost:9001
-2025/11/09 18:52:11 client.go:82: Node 3 listening on localhost:9002
+2025/11/09 21:25:31 client.go:71: Node 1 listening on localhost:9000
+2025/11/09 21:25:31 client.go:135: Node 1 connected to peer 3 at localhost:9002
+2025/11/09 21:25:31 client.go:135: Node 1 connected to peer 2 at localhost:9001
+2025/11/09 21:25:32 client.go:71: Node 2 listening on localhost:9001
+2025/11/09 21:25:32 client.go:135: Node 2 connected to peer 1 at localhost:9000
+2025/11/09 21:25:32 client.go:135: Node 2 connected to peer 3 at localhost:9002
+2025/11/09 21:25:34 client.go:71: Node 3 listening on localhost:9002
+2025/11/09 21:25:34 client.go:135: Node 3 connected to peer 1 at localhost:9000
+2025/11/09 21:25:34 client.go:135: Node 3 connected to peer 2 at localhost:9001
+2025/11/09 21:25:41 client.go:143: Node 2 received an access request from node 3 at time: 3
+2025/11/09 21:25:41 client.go:183: Node 3 has received a reply from client 2 at time: 5
+2025/11/09 21:25:41 client.go:143: Node 1 received an access request from node 3 at time: 3
+2025/11/09 21:25:41 client.go:183: Node 3 has received a reply from client 1 at time: 5
+2025/11/09 21:25:42 client.go:143: Node 1 received an access request from node 2 at time: 5
+2025/11/09 21:25:42 client.go:143: Node 3 received an access request from node 2 at time: 7
+2025/11/09 21:25:42 client.go:183: Node 2 has received a reply from client 3 at time: 7
+2025/11/09 21:25:42 client.go:183: Node 2 has received a reply from client 1 at time: 7
+2025/11/09 21:25:44 client.go:225: Node 3 is now in the Critical Section at logical time: 8
+2025/11/09 21:25:44 client.go:231: Node 3 has left the Critical Section at logical time: 9
+2025/11/09 21:25:44 client.go:143: Node 3 received an access request from node 2 at time: 11
+2025/11/09 21:25:44 client.go:244: Node 3 is replying to client 2 at time: 12
+2025/11/09 21:25:45 client.go:225: Node 2 is now in the Critical Section at logical time: 8
+2025/11/09 21:25:45 client.go:231: Node 2 has left the Critical Section at logical time: 9
+2025/11/09 21:25:55 client.go:143: Node 2 received an access request from node 1 at time: 10
+2025/11/09 21:25:55 client.go:183: Node 1 has received a reply from client 2 at time: 9
+2025/11/09 21:25:55 client.go:143: Node 3 received an access request from node 1 at time: 13
+2025/11/09 21:25:55 client.go:183: Node 1 has received a reply from client 3 at time: 9
+2025/11/09 21:25:58 client.go:225: Node 1 is now in the Critical Section at logical time: 10
+2025/11/09 21:25:58 client.go:231: Node 1 has left the Critical Section at logical time: 11
+2025/11/09 21:26:02 client.go:112: received termination signal, shutting down gracefully ...
+2025/11/09 21:26:09 client.go:112: received termination signal, shutting down gracefully ...
+2025/11/09 21:26:11 client.go:112: received termination signal, shutting down gracefully ...
