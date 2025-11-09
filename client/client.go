@@ -3,20 +3,57 @@ package main
 import (
 	"fmt"
 	"log"
+	"net"
 	"os"
 	"os/signal"
 	"syscall"
 
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
+
 	// "context"
-	// "time"
 	pb "mandatory4/grpc"
+	"time"
 )
 
 type node struct {
 	pb.UnimplementedRicartAgrawalaServiceServer
-	peers map[string]chan *pb.AccessRequest
-	clock int64
-	state string
+	peers    map[string]pb.RicartAgrawalaServiceClient
+	channels map[string]chan *pb.AccessRequest
+	clock    int64
+	state    string
+}
+
+var peerPorts = []string{
+	"localhost:9001",
+	"localhost:9002",
+	"localhost:9003",
+}
+
+func (n *node) multicast(msg *pb.AccessRequest) {
+	for channel := range n.channels {
+		n.channels[channel] <- msg
+	}
+}
+
+func (n *node) connectToPeer(addr string) {
+	for {
+		conn, err := grpc.NewClient(
+			addr,
+			grpc.WithTransportCredentials(insecure.NewCredentials()),
+		)
+		if err == nil {
+			log.Println("connected to", addr)
+			fmt.Println("connected to", addr)
+			n.peers[addr] = pb.NewRicartAgrawalaServiceClient(conn)
+
+			return
+		}
+
+		log.Println("retrying peer:", addr)
+		fmt.Println("retrying peer:", addr)
+		time.Sleep(2 * time.Second)
+	}
 }
 
 func main() {
@@ -29,11 +66,39 @@ func main() {
 	log.SetOutput(logFile)
 	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
 
-	// lis, err := net.Listen("tcp", "0.0.0.0:9000")
-	// if err != nil {
-	// 	log.Fatalf("failed to listen: %v", err)
+	// handle server address
+	port := "9000"
+	if len(os.Args) > 1 { // if the client specifies a port
+		port = os.Args[1]
+	}
+
+	// server listening
+	lis, err := net.Listen("tcp", "0.0.0.0:"+port)
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+		fmt.Printf("failed to listen: %v", err)
+	}
+	log.Printf("The server is listening at %v", lis.Addr())
+	fmt.Printf("The server is listening at %v", lis.Addr())
+
+	grpcServer := grpc.NewServer()
+	n := &node{
+		channels: make(map[string]chan *pb.AccessRequest),
+	}
+
+	pb.RegisterRicartAgrawalaServiceServer(grpcServer, n)
+
+	// connecting to peers
+	for _, port := range peerPorts {
+		n.connectToPeer(port)
+	}
+
+	// accessRequest := &pb.AccessRequest{
+	// 	Sender:      port,
+	// 	LogicalTime: 1,
 	// }
-	// log.Printf("The server is listening at %v", lis.Addr())
+	// n.multicast(accessRequest)
+	// fmt.Print("send accessrequest")
 
 	//graceful shutdown
 	signalChan := make(chan os.Signal, 1)
@@ -46,11 +111,5 @@ func main() {
 
 	// ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	// defer cancel()
-
-}
-func (n *node) multicast(msg *pb.AccessRequest) {
-	for peer := range n.peers {
-		n.peers[peer] <- msg
-	}
 
 }
