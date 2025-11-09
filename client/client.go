@@ -148,6 +148,11 @@ func (node *node) RequestAndReply(ctx context.Context, request *pb.Message) (*pb
 func (node *node) RequestHandler(request *pb.Message) *pb.Message {
 	node.clock++
 	if node.state == "HELD" || (node.state == "WANTED" && node.clock < request.LogicalTime) {
+		if node.state == "HELD" {
+			log.Printf("Node %s is in HELD state, enqueueing request from node %s at time %d", node.id, request.Sender, node.clock)
+		} else {
+			log.Printf("Node %s is in WANTED state and earlier (time: %d) than node %s, ignoring request", node.id, node.clock, request.Sender)
+		}
 		node.queue.Enqueue(request)
 	} else if node.state == "WANTED" && node.clock == request.LogicalTime {
 		if node.id < request.Sender {
