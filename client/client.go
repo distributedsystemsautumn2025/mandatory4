@@ -5,7 +5,6 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"io"
 	"log"
 	"net"
 	"os"
@@ -26,13 +25,13 @@ type Queue struct {
 	Size     int
 }
 type node struct {
-	server    pb.UnimplementedRicartAgrawalaServiceServer
-	client    pb.RicartAgrawalaServiceClient
+	pb.UnimplementedRicartAgrawalaServiceServer
+	pb.RicartAgrawalaServiceClient
 	id        string
 	clock     int64
 	state     string
 	replies   [3]*pb.Message
-	id2client map[string]*pb.RicartAgrawalaServiceClient
+	id2client map[string]pb.RicartAgrawalaServiceClient
 	queue     Queue
 }
 
@@ -43,6 +42,15 @@ var idToPort = map[string]string{
 }
 
 func main() {
+	//setup logFile
+	logFile, err := os.OpenFile("../RicartAgrawala.log", os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0666)
+	if err != nil {
+		log.Fatalf("error opening file: %v", err)
+	}
+	defer logFile.Close()
+	log.SetOutput(logFile)
+	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
+
 	//here, we let clients define their id at instantiation in terminal
 	//when starting the program, run : "go run client.go --id='ID'"
 	//port := flag.String("port", "", "listen on this port")
@@ -58,21 +66,21 @@ func main() {
 	if !ok {
 		log.Fatalf("Did not find address for id=%s", *id)
 	}
-
+	node := &node{
+		id:        *id,
+		clock:     0,
+		state:     "RELEASED",
+		replies:   [3]*pb.Message{},
+		queue:     Queue{Size: 3},
+		id2client: map[string]pb.RicartAgrawalaServiceClient{},
+	}
+	// listen
 	lis, err := net.Listen("tcp", nodeAddress)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 	log.Printf("Node %s listening on %s", *id, nodeAddress)
-
-	node := &node{
-		id:      *id,
-		clock:   0,
-		state:   "RELEASED",
-		replies: [3]*pb.Message{},
-		queue:   Queue{Size: 3},
-	}
-
+	// serve
 	grpcServer := grpc.NewServer()
 	pb.RegisterRicartAgrawalaServiceServer(grpcServer, node)
 	if err := grpcServer.Serve(lis); err != nil {
@@ -80,13 +88,23 @@ func main() {
 	}
 	log.Printf("Node %s is serving on %s", *id, nodeAddress)
 
+	// do node stuff i.e.: listen for CLI-args
+
+	node.ConnectToPeers()
+	go func() {
+		for {
+			_, err := bufio.NewReader(os.Stdin).ReadString('\n')
+			if err != nil {
+				log.Printf("Error reading CLI: %v", err)
+			}
+			node.Requester()
+			fmt.Println("sending request...")
+
+		}
+	}()
 	//graceful shutdown
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(signalChan, syscall.SIGINT, syscall.SIGTERM)
-	// do node stuff
-	go func() {
-
-	}()
 	// blocks code below, till signal is received
 	<-signalChan
 	log.Println("received termination signal, shutting down gracefully ...")
@@ -98,12 +116,11 @@ func main() {
 }
 
 // here we attempt to connect to other nodes
-func (node *node) ConnectToPeers() {
-	node.id2client = make(map[string]*pb.RicartAgrawalaServiceClient)
-
+func (n *node) ConnectToPeers() {
+	n.id2client = make(map[string]pb.RicartAgrawalaServiceClient)
 	for peerID, addr := range idToPort {
 		//check that you don't attempt to connect to yourself:
-		if peerID == node.id {
+		if peerID == n.id {
 			continue
 		}
 		conn, err := grpc.NewClient(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
@@ -112,13 +129,13 @@ func (node *node) ConnectToPeers() {
 		}
 
 		client := pb.NewRicartAgrawalaServiceClient(conn)
-		node.id2client[peerID] = &client
-		log.Printf("Node %s connected to peer %s \n at %s", node.id, peerID, addr)
+		n.id2client[peerID] = client
+		log.Printf("Node %s connected to peer %s \n at %s", n.id, peerID, addr)
 	}
 }
 
 // RequestReply is the server-side implementation of our grpc service
-func (node *node) RequestReply(ctx context.Context, request *pb.Message) (*pb.Message, error) {
+func (node *node) RequestAndReply(ctx context.Context, request *pb.Message) (*pb.Message, error) {
 	log.Printf("Node %s received an access request from node %s at time: %d", node.id, request.Sender, request.LogicalTime)
 	return node.RequestHandler(request), nil
 }
@@ -141,18 +158,21 @@ func (node *node) RequestHandler(request *pb.Message) *pb.Message {
 }
 
 // Requester sends an access request out to all other nodes
-func (node *node) Requester(request *pb.Message) {
+func (node *node) Requester() {
+	request := &pb.Message{
+		Sender:         node.id,
+		RequestOrReply: "REQUEST",
+		LogicalTime:    node.clock,
+	}
 	// some clock stuff
 	node.state = "WANTED"
 	for clientID, client := range node.id2client {
-		go func(clientID string, client *pb.RicartAgrawalaServiceClient) {
+		go func(clientID string, client pb.RicartAgrawalaServiceClient) {
 			ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 			defer cancel()
-			reply, err := RequestReply(ctx, request)
-			{
-				if err != nil {
-					log.Printf("Failed to request reply: %v", err)
-				}
+			reply, err := client.RequestAndReply(ctx, request)
+			if err != nil {
+				log.Printf("Failed to request reply: %v", err)
 			}
 			log.Printf("Node %s is received a reply from client %s at time: %d", node.id, clientID, reply.LogicalTime)
 		}(clientID, client)
