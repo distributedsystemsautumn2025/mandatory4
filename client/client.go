@@ -38,8 +38,6 @@ var idToPort = map[string]string{
 func main() {
 	//here, we let clients define their id at instantiation in terminal
 	//when starting the program, run : "go run client.go --id='ID'"
-	//port := flag.String("port", "", "listen on this port")
-
 	id := flag.String("id", "", "node ID")
 	flag.Parse()
 
