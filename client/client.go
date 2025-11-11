@@ -209,10 +209,12 @@ func (node *node) AccessGranted() bool {
 		}
 	case "2":
 		if node.replies[0] != nil && node.replies[2] != nil {
+			node.ResetReplies(0, 2)
 			return true
 		}
 	case "3":
 		if node.replies[0] != nil && node.replies[1] != nil {
+			node.ResetReplies(0, 1)
 			return true
 		}
 	}
@@ -226,7 +228,7 @@ func (node *node) ResetReplies(index1 int, index2 int) {
 func (node *node) CriticalSection() {
 	node.clock++
 	node.state = "HELD"
-	time.Sleep(3 * time.Second)
+	time.Sleep(10 * time.Second)
 	log.Printf("Node %s is now in the Critical Section at logical time: %d", node.id, node.clock)
 	node.LeaveCriticalSection()
 }
