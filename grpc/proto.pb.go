@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.10
 // 	protoc        v6.32.1
-// source: mandatory4/grpc/proto.proto
+// source: grpc/proto.proto
 
 package proto
 
@@ -21,29 +21,30 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type AccessRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Sender        string                 `protobuf:"bytes,1,opt,name=sender,proto3" json:"sender,omitempty"`
-	LogicalTime   int64                  `protobuf:"varint,2,opt,name=logicalTime,proto3" json:"logicalTime,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+type Message struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	Sender         string                 `protobuf:"bytes,1,opt,name=sender,proto3" json:"sender,omitempty"`
+	RequestOrReply string                 `protobuf:"bytes,2,opt,name=requestOrReply,proto3" json:"requestOrReply,omitempty"`
+	LogicalTime    int64                  `protobuf:"varint,3,opt,name=logicalTime,proto3" json:"logicalTime,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
-func (x *AccessRequest) Reset() {
-	*x = AccessRequest{}
-	mi := &file_mandatory4_grpc_proto_proto_msgTypes[0]
+func (x *Message) Reset() {
+	*x = Message{}
+	mi := &file_grpc_proto_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *AccessRequest) String() string {
+func (x *Message) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*AccessRequest) ProtoMessage() {}
+func (*Message) ProtoMessage() {}
 
-func (x *AccessRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_mandatory4_grpc_proto_proto_msgTypes[0]
+func (x *Message) ProtoReflect() protoreflect.Message {
+	mi := &file_grpc_proto_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -54,141 +55,90 @@ func (x *AccessRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use AccessRequest.ProtoReflect.Descriptor instead.
-func (*AccessRequest) Descriptor() ([]byte, []int) {
-	return file_mandatory4_grpc_proto_proto_rawDescGZIP(), []int{0}
+// Deprecated: Use Message.ProtoReflect.Descriptor instead.
+func (*Message) Descriptor() ([]byte, []int) {
+	return file_grpc_proto_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *AccessRequest) GetSender() string {
+func (x *Message) GetSender() string {
 	if x != nil {
 		return x.Sender
 	}
 	return ""
 }
 
-func (x *AccessRequest) GetLogicalTime() int64 {
+func (x *Message) GetRequestOrReply() string {
 	if x != nil {
-		return x.LogicalTime
-	}
-	return 0
-}
-
-type Reply struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Sender        string                 `protobuf:"bytes,1,opt,name=sender,proto3" json:"sender,omitempty"`
-	LogicalTime   int64                  `protobuf:"varint,3,opt,name=logicalTime,proto3" json:"logicalTime,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *Reply) Reset() {
-	*x = Reply{}
-	mi := &file_mandatory4_grpc_proto_proto_msgTypes[1]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *Reply) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*Reply) ProtoMessage() {}
-
-func (x *Reply) ProtoReflect() protoreflect.Message {
-	mi := &file_mandatory4_grpc_proto_proto_msgTypes[1]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use Reply.ProtoReflect.Descriptor instead.
-func (*Reply) Descriptor() ([]byte, []int) {
-	return file_mandatory4_grpc_proto_proto_rawDescGZIP(), []int{1}
-}
-
-func (x *Reply) GetSender() string {
-	if x != nil {
-		return x.Sender
+		return x.RequestOrReply
 	}
 	return ""
 }
 
-func (x *Reply) GetLogicalTime() int64 {
+func (x *Message) GetLogicalTime() int64 {
 	if x != nil {
 		return x.LogicalTime
 	}
 	return 0
 }
 
-var File_mandatory4_grpc_proto_proto protoreflect.FileDescriptor
+var File_grpc_proto_proto protoreflect.FileDescriptor
 
-const file_mandatory4_grpc_proto_proto_rawDesc = "" +
+const file_grpc_proto_proto_rawDesc = "" +
 	"\n" +
-	"\x1bmandatory4/grpc/proto.proto\"I\n" +
-	"\raccessRequest\x12\x16\n" +
-	"\x06sender\x18\x01 \x01(\tR\x06sender\x12 \n" +
-	"\vlogicalTime\x18\x02 \x01(\x03R\vlogicalTime\"A\n" +
-	"\x05reply\x12\x16\n" +
-	"\x06sender\x18\x01 \x01(\tR\x06sender\x12 \n" +
-	"\vlogicalTime\x18\x03 \x01(\x03R\vlogicalTime2m\n" +
-	"\x15RicartAgrawalaService\x12.\n" +
-	"\x06Access\x12\x0e.accessRequest\x1a\x0e.accessRequest\"\x00(\x010\x01\x12$\n" +
-	"\fConfirmation\x12\x06.reply\x1a\x06.reply\"\x00(\x010\x01B\x17Z\x15mandatory4/grpc;protob\x06proto3"
+	"\x10grpc/proto.proto\"k\n" +
+	"\amessage\x12\x16\n" +
+	"\x06sender\x18\x01 \x01(\tR\x06sender\x12&\n" +
+	"\x0erequestOrReply\x18\x02 \x01(\tR\x0erequestOrReply\x12 \n" +
+	"\vlogicalTime\x18\x03 \x01(\x03R\vlogicalTime2@\n" +
+	"\x15RicartAgrawalaService\x12'\n" +
+	"\x0fRequestAndReply\x12\b.message\x1a\b.message\"\x00B\x17Z\x15mandatory4/grpc;protob\x06proto3"
 
 var (
-	file_mandatory4_grpc_proto_proto_rawDescOnce sync.Once
-	file_mandatory4_grpc_proto_proto_rawDescData []byte
+	file_grpc_proto_proto_rawDescOnce sync.Once
+	file_grpc_proto_proto_rawDescData []byte
 )
 
-func file_mandatory4_grpc_proto_proto_rawDescGZIP() []byte {
-	file_mandatory4_grpc_proto_proto_rawDescOnce.Do(func() {
-		file_mandatory4_grpc_proto_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_mandatory4_grpc_proto_proto_rawDesc), len(file_mandatory4_grpc_proto_proto_rawDesc)))
+func file_grpc_proto_proto_rawDescGZIP() []byte {
+	file_grpc_proto_proto_rawDescOnce.Do(func() {
+		file_grpc_proto_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_grpc_proto_proto_rawDesc), len(file_grpc_proto_proto_rawDesc)))
 	})
-	return file_mandatory4_grpc_proto_proto_rawDescData
+	return file_grpc_proto_proto_rawDescData
 }
 
-var file_mandatory4_grpc_proto_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
-var file_mandatory4_grpc_proto_proto_goTypes = []any{
-	(*AccessRequest)(nil), // 0: accessRequest
-	(*Reply)(nil),         // 1: reply
+var file_grpc_proto_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_grpc_proto_proto_goTypes = []any{
+	(*Message)(nil), // 0: message
 }
-var file_mandatory4_grpc_proto_proto_depIdxs = []int32{
-	0, // 0: RicartAgrawalaService.Access:input_type -> accessRequest
-	1, // 1: RicartAgrawalaService.Confirmation:input_type -> reply
-	0, // 2: RicartAgrawalaService.Access:output_type -> accessRequest
-	1, // 3: RicartAgrawalaService.Confirmation:output_type -> reply
-	2, // [2:4] is the sub-list for method output_type
-	0, // [0:2] is the sub-list for method input_type
+var file_grpc_proto_proto_depIdxs = []int32{
+	0, // 0: RicartAgrawalaService.RequestAndReply:input_type -> message
+	0, // 1: RicartAgrawalaService.RequestAndReply:output_type -> message
+	1, // [1:2] is the sub-list for method output_type
+	0, // [0:1] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
 }
 
-func init() { file_mandatory4_grpc_proto_proto_init() }
-func file_mandatory4_grpc_proto_proto_init() {
-	if File_mandatory4_grpc_proto_proto != nil {
+func init() { file_grpc_proto_proto_init() }
+func file_grpc_proto_proto_init() {
+	if File_grpc_proto_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_mandatory4_grpc_proto_proto_rawDesc), len(file_mandatory4_grpc_proto_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_grpc_proto_proto_rawDesc), len(file_grpc_proto_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   1,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_mandatory4_grpc_proto_proto_goTypes,
-		DependencyIndexes: file_mandatory4_grpc_proto_proto_depIdxs,
-		MessageInfos:      file_mandatory4_grpc_proto_proto_msgTypes,
+		GoTypes:           file_grpc_proto_proto_goTypes,
+		DependencyIndexes: file_grpc_proto_proto_depIdxs,
+		MessageInfos:      file_grpc_proto_proto_msgTypes,
 	}.Build()
-	File_mandatory4_grpc_proto_proto = out.File
-	file_mandatory4_grpc_proto_proto_goTypes = nil
-	file_mandatory4_grpc_proto_proto_depIdxs = nil
+	File_grpc_proto_proto = out.File
+	file_grpc_proto_proto_goTypes = nil
+	file_grpc_proto_proto_depIdxs = nil
 }

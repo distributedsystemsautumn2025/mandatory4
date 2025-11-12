@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             v6.32.1
-// source: mandatory4/grpc/proto.proto
+// source: grpc/proto.proto
 
 package proto
 
@@ -19,16 +19,14 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	RicartAgrawalaService_Access_FullMethodName       = "/RicartAgrawalaService/Access"
-	RicartAgrawalaService_Confirmation_FullMethodName = "/RicartAgrawalaService/Confirmation"
+	RicartAgrawalaService_RequestAndReply_FullMethodName = "/RicartAgrawalaService/RequestAndReply"
 )
 
 // RicartAgrawalaServiceClient is the client API for RicartAgrawalaService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type RicartAgrawalaServiceClient interface {
-	Access(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[AccessRequest, AccessRequest], error)
-	Confirmation(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[Reply, Reply], error)
+	RequestAndReply(ctx context.Context, in *Message, opts ...grpc.CallOption) (*Message, error)
 }
 
 type ricartAgrawalaServiceClient struct {
@@ -39,38 +37,21 @@ func NewRicartAgrawalaServiceClient(cc grpc.ClientConnInterface) RicartAgrawalaS
 	return &ricartAgrawalaServiceClient{cc}
 }
 
-func (c *ricartAgrawalaServiceClient) Access(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[AccessRequest, AccessRequest], error) {
+func (c *ricartAgrawalaServiceClient) RequestAndReply(ctx context.Context, in *Message, opts ...grpc.CallOption) (*Message, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	stream, err := c.cc.NewStream(ctx, &RicartAgrawalaService_ServiceDesc.Streams[0], RicartAgrawalaService_Access_FullMethodName, cOpts...)
+	out := new(Message)
+	err := c.cc.Invoke(ctx, RicartAgrawalaService_RequestAndReply_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &grpc.GenericClientStream[AccessRequest, AccessRequest]{ClientStream: stream}
-	return x, nil
+	return out, nil
 }
-
-// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type RicartAgrawalaService_AccessClient = grpc.BidiStreamingClient[AccessRequest, AccessRequest]
-
-func (c *ricartAgrawalaServiceClient) Confirmation(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[Reply, Reply], error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	stream, err := c.cc.NewStream(ctx, &RicartAgrawalaService_ServiceDesc.Streams[1], RicartAgrawalaService_Confirmation_FullMethodName, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &grpc.GenericClientStream[Reply, Reply]{ClientStream: stream}
-	return x, nil
-}
-
-// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type RicartAgrawalaService_ConfirmationClient = grpc.BidiStreamingClient[Reply, Reply]
 
 // RicartAgrawalaServiceServer is the server API for RicartAgrawalaService service.
 // All implementations must embed UnimplementedRicartAgrawalaServiceServer
 // for forward compatibility.
 type RicartAgrawalaServiceServer interface {
-	Access(grpc.BidiStreamingServer[AccessRequest, AccessRequest]) error
-	Confirmation(grpc.BidiStreamingServer[Reply, Reply]) error
+	RequestAndReply(context.Context, *Message) (*Message, error)
 	mustEmbedUnimplementedRicartAgrawalaServiceServer()
 }
 
@@ -81,11 +62,8 @@ type RicartAgrawalaServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedRicartAgrawalaServiceServer struct{}
 
-func (UnimplementedRicartAgrawalaServiceServer) Access(grpc.BidiStreamingServer[AccessRequest, AccessRequest]) error {
-	return status.Errorf(codes.Unimplemented, "method Access not implemented")
-}
-func (UnimplementedRicartAgrawalaServiceServer) Confirmation(grpc.BidiStreamingServer[Reply, Reply]) error {
-	return status.Errorf(codes.Unimplemented, "method Confirmation not implemented")
+func (UnimplementedRicartAgrawalaServiceServer) RequestAndReply(context.Context, *Message) (*Message, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RequestAndReply not implemented")
 }
 func (UnimplementedRicartAgrawalaServiceServer) mustEmbedUnimplementedRicartAgrawalaServiceServer() {}
 func (UnimplementedRicartAgrawalaServiceServer) testEmbeddedByValue()                               {}
@@ -108,19 +86,23 @@ func RegisterRicartAgrawalaServiceServer(s grpc.ServiceRegistrar, srv RicartAgra
 	s.RegisterService(&RicartAgrawalaService_ServiceDesc, srv)
 }
 
-func _RicartAgrawalaService_Access_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(RicartAgrawalaServiceServer).Access(&grpc.GenericServerStream[AccessRequest, AccessRequest]{ServerStream: stream})
+func _RicartAgrawalaService_RequestAndReply_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Message)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RicartAgrawalaServiceServer).RequestAndReply(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RicartAgrawalaService_RequestAndReply_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RicartAgrawalaServiceServer).RequestAndReply(ctx, req.(*Message))
+	}
+	return interceptor(ctx, in, info, handler)
 }
-
-// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type RicartAgrawalaService_AccessServer = grpc.BidiStreamingServer[AccessRequest, AccessRequest]
-
-func _RicartAgrawalaService_Confirmation_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(RicartAgrawalaServiceServer).Confirmation(&grpc.GenericServerStream[Reply, Reply]{ServerStream: stream})
-}
-
-// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type RicartAgrawalaService_ConfirmationServer = grpc.BidiStreamingServer[Reply, Reply]
 
 // RicartAgrawalaService_ServiceDesc is the grpc.ServiceDesc for RicartAgrawalaService service.
 // It's only intended for direct use with grpc.RegisterService,
@@ -128,20 +110,12 @@ type RicartAgrawalaService_ConfirmationServer = grpc.BidiStreamingServer[Reply, 
 var RicartAgrawalaService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "RicartAgrawalaService",
 	HandlerType: (*RicartAgrawalaServiceServer)(nil),
-	Methods:     []grpc.MethodDesc{},
-	Streams: []grpc.StreamDesc{
+	Methods: []grpc.MethodDesc{
 		{
-			StreamName:    "Access",
-			Handler:       _RicartAgrawalaService_Access_Handler,
-			ServerStreams: true,
-			ClientStreams: true,
-		},
-		{
-			StreamName:    "Confirmation",
-			Handler:       _RicartAgrawalaService_Confirmation_Handler,
-			ServerStreams: true,
-			ClientStreams: true,
+			MethodName: "RequestAndReply",
+			Handler:    _RicartAgrawalaService_RequestAndReply_Handler,
 		},
 	},
-	Metadata: "mandatory4/grpc/proto.proto",
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "grpc/proto.proto",
 }

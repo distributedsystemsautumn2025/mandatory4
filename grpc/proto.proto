@@ -2,17 +2,12 @@ syntax = "proto3";
 
 option go_package = "mandatory4/grpc;proto";
 
-message accessRequest{
+message message{
     string sender = 1;
-    int64 logicalTime = 2;
-}
-
-message reply {
-    string sender = 1;
-    int64 logicalTime = 3; 
+    string requestOrReply = 2;
+    int64 logicalTime = 3;
 }
 
 service RicartAgrawalaService {
-    rpc Access(stream accessRequest) returns (stream accessRequest) {} // bi directional
-    rpc Confirmation(stream reply) returns (stream reply) {} //bi directional
+    rpc RequestAndReply(message) returns (message) {}
 }
